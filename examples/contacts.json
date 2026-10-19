@@ -1,0 +1,14 @@
+[
+  {
+    "id": "0007",
+    "name": "Mila",
+    "email": "mila@example.com",
+    "note": "Prefers email, after 10:00"
+  },
+  {
+    "id": "0008",
+    "name": "Zoë",
+    "email": "zoe@example.com",
+    "note": ""
+  }
+]
