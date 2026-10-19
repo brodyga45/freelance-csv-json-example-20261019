@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Field Study — personal interaction demo</title>
+  <style>
+    :root { --paper: #f5f3e9; --ink: #22271f; --muted: #5b6253; --lime: #c6f24d; --line: #c9cdbd; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; }
+    button { font: inherit; color: inherit; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--ink); outline-offset: 5px; }
+    a { color: inherit; }
+    .skip { position: absolute; left: 20px; top: -90px; z-index: 5; background: var(--lime); padding: 12px; }
+    .skip:focus { top: 12px; }
+    .shell { max-width: 1240px; padding: 0 48px; margin: auto; }
+    header { display: flex; justify-content: space-between; gap: 24px; align-items: center; padding: 29px 0; border-bottom: 1px solid var(--line); }
+    .brand { font-weight: 700; letter-spacing: -.04em; font-size: 24px; display: flex; align-items: center; gap: 10px; }
+    .brand::before { content: ''; width: 17px; height: 17px; background: var(--lime); border: 1px solid var(--ink); }
+    .micro { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+    .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 46px; align-items: center; padding: 70px 0 52px; }
+    .eyebrow { display: inline-block; padding: 5px 10px; border: 1px solid var(--line); border-radius: 99px; margin: 0 0 24px; }
+    h1 { font-size: clamp(42px, 5.4vw, 70px); line-height: 1.04; letter-spacing: -.065em; font-weight: 500; margin: 0 0 26px; }
+    .intro { max-width: 420px; font-size: 17px; color: var(--muted); margin: 0 0 28px; }
+    .capabilities { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
+    .capabilities li { font-size: 12px; border-bottom: 1px solid var(--line); padding: 4px 0; margin-right: 12px; }
+    .interaction { margin: 0; min-width: 0; }
+    .stage { --x: 0px; --y: 0px; display: block; width: 100%; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: #eeeee1; cursor: pointer; position: relative; aspect-ratio: 1.15; }
+    .stage svg { width: 100%; height: 100%; display: block; }
+    .response { transform: translate(var(--x), var(--y)); transition: transform 150ms ease-out; }
+    .petals { transform-box: fill-box; transform-origin: center; }
+    .pulse { transform-box: fill-box; transform-origin: center; }
+    .stage.is-active .center { fill: var(--ink); }
+    .stage.is-active .center-dot { fill: var(--lime); }
+    .stage-hint { position: absolute; bottom: 18px; right: 19px; padding: 5px 11px; border: 1px solid var(--ink); border-radius: 99px; font-size: 12px; background: var(--paper); }
+    figcaption { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); margin-top: 13px; font-size: 12px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .work { padding: 32px 0 64px; border-top: 1px solid var(--line); }
+    .work-heading { display: flex; gap: 20px; justify-content: space-between; align-items: end; margin-bottom: 24px; }
+    h2 { font-size: 29px; font-weight: 500; letter-spacing: -.04em; margin: 0 0 5px; }
+    .work-note { font-size: 13px; color: var(--muted); margin: 0; }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter { border: 1px solid var(--line); background: transparent; padding: 8px 18px; border-radius: 99px; cursor: pointer; transition: background 150ms, border-color 150ms; }
+    .filter:hover { border-color: var(--ink); }
+    .filter[aria-pressed="true"] { background: var(--lime); border-color: var(--ink); }
+    .grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 30px 24px; }
+    .card { min-width: 0; }
+    .card[hidden] { display: none; }
+    .art { position: relative; overflow: hidden; aspect-ratio: 1.7; border-radius: 12px; background: #e3e5d7; border: 1px solid var(--line); display: grid; place-items: center; }
+    .art-mark { position: relative; width: 122px; height: 122px; border: 2px solid var(--ink); }
+    .art-mark::before, .art-mark::after { content: ''; position: absolute; border: 2px solid var(--ink); }
+    .art-mark::before { inset: 18px; background: var(--lime); }
+    .art-mark::after { inset: 38px; background: var(--paper); }
+    .rings .art-mark, .rings .art-mark::before, .rings .art-mark::after { border-radius: 50%; }
+    .fold .art-mark { transform: rotate(45deg); }
+    .shift .art-mark { width: 166px; height: 92px; border-radius: 50%; }
+    .shift .art-mark::before { inset: 13px 30px; border-radius: 50%; }
+    .shift .art-mark::after { inset: 29px 59px; border-radius: 50%; }
+    .steps .art-mark { width: 116px; height: 116px; border: none; background: var(--ink); clip-path: polygon(0 66%,33% 66%,33% 33%,66% 33%,66% 0,100% 0,100% 100%,0 100%); }
+    .steps .art-mark::before { inset: 8px; background: var(--lime); border: none; clip-path: inherit; }
+    .steps .art-mark::after { display: none; }
+    .specimen { position: absolute; top: 15px; left: 17px; font-size: 11px; letter-spacing: .08em; }
+    .card-title { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin: 14px 0 4px; }
+    h3 { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: -.02em; }
+    .category { font-size: 12px; color: var(--muted); }
+    .card p { color: var(--muted); font-size: 13px; margin: 0; }
+    footer { padding: 24px 0 36px; border-top: 1px solid var(--line); display: flex; gap: 20px; justify-content: space-between; color: var(--muted); font-size: 12px; }
+    @media (max-width: 760px) {
+      .shell { padding: 0 24px; }
+      .hero { grid-template-columns: 1fr; padding-top: 42px; gap: 24px; }
+      .intro { max-width: 540px; }
+      .stage { max-height: 440px; }
+      .work-heading { align-items: start; flex-direction: column; }
+      .grid { gap: 26px 18px; }
+    }
+    @media (max-width: 480px) {
+      .shell { padding: 0 20px; }
+      header { align-items: start; gap: 12px; }
+      header .micro { max-width: 118px; text-align: right; }
+      .grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 5px; }
+      figcaption { flex-wrap: wrap; gap: 5px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+      .response { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="shell">
+    <header><span class="brand">Field Study</span><span class="micro">Independent interaction lab · 01</span></header>
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow micro">Personal demo</p>
+          <h1 id="hero-title">Small details.<br>Clear interactions.</h1>
+          <p class="intro">A responsive frontend study: a reactive SVG, a click-triggered pulse, and project filters you can use with a keyboard.</p>
+          <ul class="capabilities" aria-label="Implementation"><li>HTML / CSS / vanilla JS</li><li>No dependencies</li><li>Reduced motion support</li></ul>
+        </div>
+        <figure class="interaction">
+          <button class="stage" type="button" aria-label="Play the orbital SVG interaction" aria-describedby="stage-help">
+            <svg viewBox="0 0 500 435" aria-hidden="true" focusable="false">
+              <defs><pattern id="dots" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="1" fill="#c0c5b3"/></pattern></defs>
+              <rect width="500" height="435" fill="url(#dots)"/>
+              <path d="M35 217.5H465M250 30V405" stroke="#bec5af" stroke-width="1" stroke-dasharray="3 7"/>
+              <g class="response">
+                <circle class="pulse" cx="250" cy="217.5" r="157" fill="none" stroke="#22271f" stroke-width="1.5"/>
+                <g class="petals" fill="#c6f24d" fill-opacity=".72" stroke="#22271f" stroke-width="1.5">
+                  <ellipse cx="250" cy="217.5" rx="144" ry="59" transform="rotate(-45 250 217.5)"/>
+                  <ellipse cx="250" cy="217.5" rx="144" ry="59" transform="rotate(45 250 217.5)"/>
+                  <ellipse cx="250" cy="217.5" rx="144" ry="59" transform="rotate(90 250 217.5)"/>
+                </g>
+                <circle class="center" cx="250" cy="217.5" r="33" fill="#f5f3e9" stroke="#22271f" stroke-width="1.5"/>
+                <circle class="center-dot" cx="250" cy="217.5" r="7" fill="#22271f"/>
+              </g>
+              <path d="M24 36V24H36M464 24H476V36M24 399V411H36M464 411H476V399" fill="none" stroke="#22271f"/>
+            </svg>
+            <span class="stage-hint" aria-hidden="true">Activate ↗</span>
+          </button>
+          <figcaption id="stage-help"><span>Move a pointer to explore.</span><span>Click, tap, Enter or Space to activate.</span></figcaption>
+          <p id="interaction-status" class="sr-only" role="status" aria-live="polite"></p>
+        </figure>
+      </section>
+      <section class="work" aria-labelledby="work-title">
+        <div class="work-heading">
+          <div><h2 id="work-title">Synthetic project studies</h2><p class="work-note" id="result-count" role="status" aria-live="polite" aria-atomic="true">4 studies shown · All</p></div>
+          <div class="filters" role="group" aria-label="Filter synthetic projects">
+            <button class="filter" type="button" data-filter="all" aria-pressed="true" aria-controls="project-grid">All</button>
+            <button class="filter" type="button" data-filter="visual" aria-pressed="false" aria-controls="project-grid">Visual</button>
+            <button class="filter" type="button" data-filter="motion" aria-pressed="false" aria-controls="project-grid">Motion</button>
+          </div>
+        </div>
+        <div class="grid" id="project-grid">
+          <article class="card" data-category="visual"><div class="art rings" aria-hidden="true"><span class="specimen">STUDY 01</span><div class="art-mark"></div></div><div class="card-title"><h3>Common Ground</h3><span class="category">Visual</span></div><p>Fictional study in concentric shapes and spacing.</p></article>
+          <article class="card" data-category="motion"><div class="art shift" aria-hidden="true"><span class="specimen">STUDY 02</span><div class="art-mark"></div></div><div class="card-title"><h3>Orbit Notes</h3><span class="category">Motion</span></div><p>Fictional motion direction: an orbital shape vocabulary.</p></article>
+          <article class="card" data-category="visual"><div class="art fold" aria-hidden="true"><span class="specimen">STUDY 03</span><div class="art-mark"></div></div><div class="card-title"><h3>Fold Index</h3><span class="category">Visual</span></div><p>Fictional visual direction built from nested geometry.</p></article>
+          <article class="card" data-category="motion"><div class="art steps" aria-hidden="true"><span class="specimen">STUDY 04</span><div class="art-mark"></div></div><div class="card-title"><h3>Step Signal</h3><span class="category">Motion</span></div><p>Fictional motion direction using a stepped silhouette.</p></article>
+        </div>
+      </section>
+    </main>
+    <footer><span>Personal demo · Synthetic projects · No client engagement</span><span>Built for interaction, not a client brief.</span></footer>
+  </div>
+  <script>
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const filters = [...document.querySelectorAll('.filter')];
+    const cards = [...document.querySelectorAll('.card')];
+    const count = document.querySelector('#result-count');
+    function cancelAnimations(element) {
+      element.getAnimations?.().forEach(animation => animation.cancel());
+    }
+    filters.forEach(button => button.addEventListener('click', () => {
+      const selected = button.dataset.filter;
+      let visible = 0;
+      filters.forEach(filter => filter.setAttribute('aria-pressed', String(filter === button)));
+      cards.forEach(card => {
+        cancelAnimations(card);
+        const matches = selected === 'all' || card.dataset.category === selected;
+        card.hidden = !matches;
+        if (!matches) return;
+        const order = visible++;
+        if (!reducedMotion.matches && card.animate) {
+          card.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'translateY(0)' }],
+            { duration: 280, delay: order * 45, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' });
+        }
+      });
+      count.textContent = `${visible} ${visible === 1 ? 'study' : 'studies'} shown · ${button.textContent}`;
+    }));
+
+    const stage = document.querySelector('.stage');
+    const petals = stage.querySelector('.petals');
+    const pulse = stage.querySelector('.pulse');
+    const status = document.querySelector('#interaction-status');
+    let activations = 0;
+    function resetPointer() {
+      stage.style.setProperty('--x', '0px');
+      stage.style.setProperty('--y', '0px');
+    }
+    stage.addEventListener('pointermove', event => {
+      if (reducedMotion.matches || event.pointerType === 'touch') return;
+      const bounds = stage.getBoundingClientRect();
+      stage.style.setProperty('--x', `${((event.clientX - bounds.left) / bounds.width - .5) * 24}px`);
+      stage.style.setProperty('--y', `${((event.clientY - bounds.top) / bounds.height - .5) * 24}px`);
+    });
+    stage.addEventListener('pointerleave', resetPointer);
+    stage.addEventListener('blur', resetPointer);
+    stage.addEventListener('click', () => {
+      activations++;
+      stage.classList.toggle('is-active');
+      cancelAnimations(petals);
+      cancelAnimations(pulse);
+      if (!reducedMotion.matches && petals.animate && pulse.animate) {
+        petals.animate([{ transform: 'rotate(0deg) scale(1)' }, { transform: 'rotate(90deg) scale(.88)', offset: .6 },
+          { transform: 'rotate(180deg) scale(1)' }], { duration: 650, easing: 'cubic-bezier(.2,.7,.2,1)' });
+        pulse.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(1.17)', opacity: 0 },
+          { transform: 'scale(1)', opacity: 1 }], { duration: 650, easing: 'ease-out' });
+      }
+      status.textContent = `Interaction ${activations} activated. ${stage.classList.contains('is-active') ? 'Dark' : 'Light'} center selected.`;
+    });
+    reducedMotion.addEventListener?.('change', () => {
+      resetPointer();
+      if (reducedMotion.matches) [...cards, petals, pulse].forEach(cancelAnimations);
+    });
+  </script>
+</body>
+</html>
