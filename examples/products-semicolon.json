@@ -1,0 +1,12 @@
+[
+  {
+    "sku": "0012",
+    "description": "Synthetic item; blue",
+    "price": "12.50"
+  },
+  {
+    "sku": "0040",
+    "description": "Synthetic item",
+    "price": "0.00"
+  }
+]
