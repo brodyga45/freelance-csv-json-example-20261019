@@ -5,6 +5,26 @@ This small Python command-line tool demonstrates a data conversion workflow with
 explicit validation and protected output files. It uses only the Python standard
 library and makes no network requests.
 
+## Small paid Python tasks
+
+A small CSV/JSON cleanup or conversion task is **$40 fixed**, delivered within
+**2 days** after scope, materials, access and payment timing are agreed.
+Typical scope: one input file up to 50,000 rows / 20 MB, up to five agreed
+transformation rules, and one output format. Delivery includes editable source,
+run instructions, checks for normal, malformed and repeated input, and one
+in-scope revision.
+
+[Open a task inquiry](https://github.com/brodyga45/freelance-csv-json-example-20261019/issues/new)
+with the input shape, expected output and deadline. Use invented sample rows in
+public issues. The exact deliverable and acceptance checks are agreed before work
+starts; an inquiry does not place an order.
+
+Work and written correspondence are AI-assisted on behalf of this account's
+owner, a Serbian sole proprietor. The code below is a personal example, rather
+than a paid client case study.
+
+Another personal source example: [HTML/CSS/JavaScript interactions](frontend-source/).
+
 ## Run
 
 Requires Python 3.9 or newer. Run these commands from this directory:
