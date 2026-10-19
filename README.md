@@ -23,7 +23,7 @@ Work and written correspondence are AI-assisted on behalf of this account's
 owner, a Serbian sole proprietor. The code below is a personal example, rather
 than a paid client case study.
 
-Another personal source example: [HTML/CSS/JavaScript interactions](frontend-source/).
+Another personal source example: [HTML/CSS/JavaScript interactions](https://github.com/brodyga45/freelance-csv-json-example-20261019/tree/main/frontend-source).
 
 ## Run
 
